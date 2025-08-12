@@ -8,6 +8,9 @@ export class Users {
   email: string;
   @Prop()
   password: string;
+  @Prop()
+  code: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
+UsersSchema.set('versionKey', false);
