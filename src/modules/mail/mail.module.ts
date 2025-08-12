@@ -3,6 +3,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MailService } from './mail.service';
 import env from '../../config/env';
 import { MailController } from './mail.controller';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -23,8 +24,9 @@ import { MailController } from './mail.controller';
         template: {},
       }),
     }),
+    UserModule,
   ],
   providers: [MailService],
-  controllers: [MailController],
+  controllers: [MailController]
 })
 export class MailModule {}

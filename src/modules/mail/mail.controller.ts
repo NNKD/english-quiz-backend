@@ -6,6 +6,6 @@ export class MailController {
   constructor(private readonly mailService: MailService) {}
   @Post('send-code')
   async sendMailVerifyCode(@Body('email') email: string) {
-    await this.mailService.sendMailVerifyCode(email, 'abc17828');
+    await this.mailService.sendMailVerifyCode(email);
   }
 }
