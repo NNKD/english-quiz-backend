@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { UserDocument, Users } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -31,29 +31,36 @@ export class UserService {
   async register(createUserDto: CreateUserDto): Promise<ResponseData<Users>> {
     const user = await this.findByEmail(createUserDto.email);
 
-    const code = user?.code || '';
+    const code = user?.code || 'BLANK';
 
     if (code === 'ACTIVED') {
-      return ResponseData.error(
-        'User already registered',
-        ResponseMessage.BAD_REQUEST,
-        HttpStatusCode.BAD_REQUEST,
-      );
+      throw new HttpException(
+        ResponseData.error(
+          'User already registered',
+          ResponseMessage.BAD_REQUEST,
+          HttpStatusCode.BAD_REQUEST,
+        ),
+        HttpStatusCode.BAD_REQUEST
+      )
     }
 
     if (code !== createUserDto.code){
-      return ResponseData.error(
+      throw new HttpException(ResponseData.error(
         'Verification code is invalid',
         ResponseMessage.BAD_REQUEST,
+        HttpStatusCode.BAD_REQUEST
+      ),
         HttpStatusCode.BAD_REQUEST
       );
     }
 
     const userRegister = await this.updateUserRegister(createUserDto.email, createUserDto.password);
     if (!userRegister){
-      return ResponseData.error(
-        'Verification code is invalid',
+      throw new HttpException(ResponseData.error(
+        'Failed to register user due to server error',
         ResponseMessage.INTERNAL_SERVER_ERROR,
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      ),
         HttpStatusCode.INTERNAL_SERVER_ERROR
       );
     }
