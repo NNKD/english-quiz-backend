@@ -14,6 +14,18 @@ export class MailService {
   ) {}
 
   async sendMailVerifyCode(to: string): Promise<ResponseData<Users | null>> {
+    const userSendCode = await this.userService.findByEmail(to);
+    const code = userSendCode?.code || '';
+    if (code == 'ACTIVED') {
+      throw new HttpException(
+        ResponseData.error(
+          'User already registered',
+          ResponseMessage.BAD_REQUEST,
+          HttpStatusCode.BAD_REQUEST,
+        ),
+        HttpStatusCode.BAD_REQUEST,
+      );
+    }
     try {
       const code = generateCode(6);
       await this.mailerService.sendMail({
