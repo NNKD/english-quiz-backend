@@ -6,6 +6,7 @@ import env from './config/env';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from './modules/user/user.module';
 import { MailModule } from './modules/mail/mail.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MailModule } from './modules/mail/mail.module';
     }),
 
     UserModule,
+    AuthModule,
     MailModule,
   ],
   controllers: [AppController],

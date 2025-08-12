@@ -2,11 +2,10 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { UserDocument, Users } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from '../../dtos/create-user.dto';
-import generateCode from '../../utils/numbers';
 import { ResponseData } from '../../global/response-data';
 import { HttpStatusCode, ResponseMessage } from '../../global/global.enum';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
@@ -54,7 +53,9 @@ export class UserService {
       );
     }
 
-    const userRegister = await this.updateUserRegister(createUserDto.email, createUserDto.password);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+    const userRegister = await this.updateUserRegister(createUserDto.email, hashedPassword);
     if (!userRegister){
       throw new HttpException(ResponseData.error(
         'Failed to register user due to server error',
