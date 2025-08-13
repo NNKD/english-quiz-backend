@@ -41,8 +41,13 @@ export class AuthService {
 
     const payload = { sub: user._id?.toString(), email: user.email };
     return ResponseData.success(
-      await this.jwtService.signAsync(payload),
-      'Login successfully',
+      {
+        id: user._id,
+        email: user.email,
+        code: user.code,
+        token: await this.jwtService.signAsync(payload),
+      },
+      'Login successfully. Enter your name to finish.',
       ResponseMessage.SUCCESS,
     );
   }
