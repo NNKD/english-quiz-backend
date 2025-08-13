@@ -15,6 +15,10 @@ export class UserService {
     return this.userModel.find().exec();
   }
 
+  async findById(_id: string): Promise<Users | null> {
+    return this.userModel.findOne({ _id }).exec();
+  }
+
   async findByEmail(email: string): Promise<Users | null> {
     return this.userModel.findOne({ email: {$regex: email, $options: 'i'} }).exec();
   }
@@ -23,7 +27,15 @@ export class UserService {
     return this.userModel.findOneAndUpdate({ email: {$regex: email, $options: 'i'} }, {email, code}, { new: true, upsert: true }).exec();
   }
 
-  async updateUserRegister(email: string, password: string, code = 'ACTIVED'): Promise<Users|null> {
+  async updateUserName(email: string, name: string): Promise<Users | null> {
+    return this.userModel.findOneAndUpdate({ email: {$regex: email, $options: 'i'} }, {email, name}, { new: true, upsert: true }).exec();
+  }
+
+  async updateUserAvatar(email: string, avatar: string): Promise<Users | null> {
+    return this.userModel.findOneAndUpdate({ email: {$regex: email, $options: 'i'} }, {email, avatar}, { new: true, upsert: true }).exec();
+  }
+
+  async updateUserRegister(email: string, password: string, code = 'UPDATE'): Promise<Users|null> {
     return this.userModel.findOneAndUpdate({ email: {$regex: email, $options: 'i'} }, {email, password, code}, { new: true, upsert: true }).exec();
   }
 
@@ -32,7 +44,7 @@ export class UserService {
 
     const code = user?.code || 'BLANK';
 
-    if (code === 'ACTIVED') {
+    if (code === 'UPDATE') {
       throw new HttpException(
         ResponseData.error(
           'User already registered',
@@ -73,5 +85,55 @@ export class UserService {
     );
   }
 
+  async updateNameAfterLogin(id: string, email: string, name: string) {
+    const userCheckId = await this.findById(id);
+    if(!userCheckId){
+      throw new HttpException(
+        ResponseData.error(
+          'User not found',
+          ResponseMessage.NOT_FOUND,
+          HttpStatusCode.NOT_FOUND,
+        ),
+        HttpStatusCode.NOT_FOUND
+      )
+    }
+
+    if (userCheckId.email.toLowerCase() !== email.toLowerCase()) {
+      throw new HttpException(
+        ResponseData.error(
+          'Email does not match user id',
+          ResponseMessage.BAD_REQUEST,
+          HttpStatusCode.BAD_REQUEST,
+        ),
+        HttpStatusCode.BAD_REQUEST
+      );
+    }
+
+    try {
+      await this.updateUserName(email, name);
+      await this.updateUserCode(email, 'ACTIVED');
+      const avatar = this.generateAvatar(name);
+      const user = await this.updateUserAvatar(email, avatar);
+      return ResponseData.success(
+        user,
+        'Your profile has been updated!',
+        ResponseMessage.SUCCESS,
+      );
+    } catch (error) {
+      throw new HttpException(
+        ResponseData.error(
+          'Failed to update user',
+          ResponseMessage.INTERNAL_SERVER_ERROR,
+          HttpStatusCode.INTERNAL_SERVER_ERROR,
+        ),
+        HttpStatusCode.INTERNAL_SERVER_ERROR
+      )
+    }
+  }
+
+  generateAvatar(name: string): string {
+    const firstLetter = name.substring(0, 1)
+    return `https://ui-avatars.com/api/?name=${firstLetter}&background=random&format=png`;
+  }
 
 }
