@@ -8,6 +8,7 @@ import { UserModule } from './modules/user/user.module';
 import { MailModule } from './modules/mail/mail.module';
 import { AuthModule } from './auth/auth.module';
 import { QuestionModule } from './modules/question/question.module';
+import { CommentModule } from './modules/comment/comment.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { QuestionModule } from './modules/question/question.module';
     UserModule,
     AuthModule,
     QuestionModule,
+    CommentModule,
     MailModule,
   ],
   controllers: [AppController],
