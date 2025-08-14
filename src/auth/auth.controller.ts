@@ -12,6 +12,8 @@ import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
 import type { RequestWithUser } from './auth.interface';
 import { SignInDto } from '../dtos/sign-in.dto';
+import { ResponseData } from '../global/response-data';
+import { ResponseMessage } from '../global/global.enum';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +28,10 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('profile')
   getProfile(@Req() req: RequestWithUser) {
-    return req.user;
+    return ResponseData.success(
+      req.user,
+      'Successfully logged in',
+      ResponseMessage.SUCCESS,
+    );
   }
 }

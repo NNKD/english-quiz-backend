@@ -1,13 +1,15 @@
 import {
   CanActivate,
   ExecutionContext,
+  HttpException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { JwtPayload, RequestWithUser } from './auth.interface';
 import { ConfigService } from '@nestjs/config';
+import { ResponseData } from '../global/response-data';
+import { HttpStatusCode, ResponseMessage } from '../global/global.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -20,7 +22,14 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<RequestWithUser>();
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException();
+      throw new HttpException(
+        ResponseData.error(
+          'Please try to sign in again',
+          ResponseMessage.UNAUTHORIZED,
+          HttpStatusCode.UNAUTHORIZED,
+        ),
+        HttpStatusCode.UNAUTHORIZED,
+      );
     }
     try {
       const payload: JwtPayload = await this.jwtService.verifyAsync(token, {
@@ -29,7 +38,14 @@ export class AuthGuard implements CanActivate {
 
       request.user = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new HttpException(
+        ResponseData.error(
+          'Please try to sign in again',
+          ResponseMessage.UNAUTHORIZED,
+          HttpStatusCode.UNAUTHORIZED,
+        ),
+        HttpStatusCode.UNAUTHORIZED,
+      );
     }
     return true;
   }

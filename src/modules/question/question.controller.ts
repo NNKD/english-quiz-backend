@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { QuestionService } from './question.service';
 
 @Controller('questions')
@@ -8,5 +8,10 @@ export class QuestionController {
   @Get('/random')
   getRandomQuestion() {
     return this.questionService.getOneRandomQuestion();
+  }
+
+  @Get('/:id')
+  getQuestionById(@Param('id') id: string) {
+    return this.questionService.getById(id);
   }
 }

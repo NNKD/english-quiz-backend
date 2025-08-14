@@ -12,7 +12,7 @@ export class QuestionService {
     private readonly questionModel: Model<QuestionDocument>,
   ) {}
 
-  async getOneRandomQuestion(): Promise<ResponseData<Questions>> {
+  async getOneRandomQuestion() {
     const result = await this.questionModel
       .aggregate<Questions>([{ $sample: { size: 1 } }])
       .exec();
@@ -27,9 +27,31 @@ export class QuestionService {
       );
     }
     return ResponseData.success(
-      result[0],
+      {
+        _id: result[0]._id,
+      },
       'Question retrieved successfully',
       ResponseMessage.SUCCESS,
     );
+  }
+
+  async getById(id: string) {
+    const result = await this.questionModel.findById(id);
+    if (!result) {
+      throw new HttpException(
+        ResponseData.error(
+          'No questions available right now',
+          ResponseMessage.NOT_FOUND,
+          HttpStatusCode.NOT_FOUND,
+        ),
+        HttpStatusCode.NOT_FOUND,
+      );
+    } else {
+      return ResponseData.success(
+        result,
+        'Question retrieved successfully',
+        ResponseMessage.SUCCESS,
+      );
+    }
   }
 }
