@@ -1,10 +1,7 @@
-# Antoree Test Fullstack
+# English Quiz Backend
 
 **Description:**  
-Backend repository for Antoree fullstack test.
-
-**Requirement:**  
-[Antoree Test Requirements](https://docs.google.com/document/d/159p8xNRCXNsHLd6uy_ZHBA5qKbJmR_Eb6J5nlpk3XHM/edit?tab=t.0)
+Backend service for an English Quiz application.
 
 ---
 
