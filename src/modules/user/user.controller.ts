@@ -1,4 +1,13 @@
-import { Body, Controller, Get, HttpException, Param, Patch, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Param,
+  Patch,
+  Post,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { Users } from './user.schema';
 import { CreateUserDto } from '../../dtos/create-user.dto';
@@ -9,9 +18,7 @@ import { yellow } from '@nestjs/common/utils/cli-colors.util';
 
 @Controller('users')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Get()
   getUsers(): Promise<Users[]> {
@@ -24,12 +31,19 @@ export class UserController {
   }
 
   @Patch('/:id')
-  async updateName(@Param('id') id:string, @Body() updateUserNameDto: UpdateUserNameDto) {
-    return this.userService.updateNameAfterLogin(id, updateUserNameDto.email, updateUserNameDto.name);
+  async updateName(
+    @Param('id') id: string,
+    @Body() updateUserNameDto: UpdateUserNameDto,
+  ) {
+    return this.userService.updateNameAfterLogin(
+      id,
+      updateUserNameDto.email,
+      updateUserNameDto.name,
+    );
   }
 
   @Get('/:id')
-  async getById(@Param('id') id:string) {
+  async getById(@Param('id') id: string) {
     const user = await this.userService.findById(id);
     if (!user) {
       throw new HttpException(
@@ -38,14 +52,14 @@ export class UserController {
           ResponseMessage.NOT_FOUND,
           HttpStatusCode.NOT_FOUND,
         ),
-        HttpStatusCode.NOT_FOUND
-      )
+        HttpStatusCode.NOT_FOUND,
+      );
     }
 
     return ResponseData.success(
       user,
       'User found successfully',
-      ResponseMessage.SUCCESS
+      ResponseMessage.SUCCESS,
     );
   }
 }

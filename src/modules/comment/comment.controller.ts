@@ -10,6 +10,7 @@ import {
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from '../../dtos/create-comment.dto';
 import { AuthGuard } from '../../auth/auth.guard';
+import { CreateReplyCommentDto } from '../../dtos/create-reply-comment.dto';
 
 @Controller('comments')
 export class CommentsController {
@@ -44,5 +45,14 @@ export class CommentsController {
     @Param('userId') userId: string,
   ) {
     return this.commentService.toggleDislike(id, userId);
+  }
+
+  @UseGuards(AuthGuard)
+  @Patch('/:id/reply')
+  async replyComment(
+    @Param('id') id: string,
+    @Body() createReplyComment: CreateReplyCommentDto,
+  ) {
+    return this.commentService.replyComment(id, createReplyComment);
   }
 }

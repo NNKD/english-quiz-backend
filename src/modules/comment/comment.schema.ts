@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { CommentReply, CommentReplySchema } from './comment-reply.schema';
 
 export type CommentDocument = Comments & Document;
 
@@ -16,6 +17,8 @@ export class Comments {
   likes: string[];
   @Prop({ type: [String], default: [] })
   dislikes: string[];
+  @Prop({ type: [CommentReplySchema], default: [] })
+  replies?: CommentReply[];
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comments);
