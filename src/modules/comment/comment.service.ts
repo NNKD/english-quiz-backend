@@ -5,6 +5,7 @@ import { CommentDocument, Comments } from './comment.schema';
 import { ResponseData } from '../../global/response-data';
 import { HttpStatusCode, ResponseMessage } from '../../global/global.enum';
 import { CreateCommentDto } from '../../dtos/create-comment.dto';
+import { CreateReplyCommentDto } from '../../dtos/create-reply-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -85,6 +86,29 @@ export class CommentService {
     return ResponseData.success(
       comment,
       'Comment updated',
+      ResponseMessage.SUCCESS,
+    );
+  }
+
+  async replyComment(_id: string, reply: CreateReplyCommentDto) {
+    const comment = await this.commentModel.findById(_id);
+    if (!comment) {
+      throw new HttpException(
+        ResponseData.error(
+          'Comment not found',
+          ResponseMessage.NOT_FOUND,
+          HttpStatusCode.NOT_FOUND,
+        ),
+        HttpStatusCode.NOT_FOUND,
+      );
+    }
+
+    comment.replies?.push(reply);
+
+    await comment.save();
+    return ResponseData.success(
+      comment,
+      'Comment updated reply',
       ResponseMessage.SUCCESS,
     );
   }
